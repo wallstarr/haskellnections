@@ -1,0 +1,13 @@
+{
+    "0": {
+        "words": ["Python","Perl","Bash","Groovy",
+        "Binary Tree","Linked List","Hash Map","Stack",
+        "Merge","Quick","Insertion","Bubble",
+        "OO","Functional","Imperative","Declarative"],
+        "connections": [
+        ["Python","Perl","Bash","Groovy"],
+        ["Binary Tree","Linked List","Hash Map","Stack"],
+        ["Merge","Quick","Insertion","Bubble"],
+        ["OO","Functional","Imperative","Declarative"]]
+    }
+}
