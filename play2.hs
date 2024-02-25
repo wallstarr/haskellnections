@@ -23,8 +23,7 @@ haskellNections :: WordGrid -> [Connection] -> Integer -> IO ()
 haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives = do
     putStrLn ("Lives Remaining: " ++ (show numLives))
     let connectionGroupsFound = filter (\ (ConnectionGroup connection _) -> connection `elem` connectionsFound) connectionGroups
-    putStrLn "\n"
-    putStrLn (gridstring connectionGroupsFound remainingWords)
+    printGrid connectionGroupsFound remainingWords
     putStrLn "Enter 1 to guess a new connection"
     putStrLn "Enter 2 to define one of the words"
     option <- getLine
@@ -52,7 +51,7 @@ haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numL
               else do 
                 haskellNections (WordGrid remainingWords connectionGroups) connectionsFound (numLives-1)
           else do 
-            putStrLn "Words are not in the grid. Try again!"
+            putStrLn "Not all words are not in the grid. Try again!"
             haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives
         else do 
           putStrLn "Invalid input. Try again!"

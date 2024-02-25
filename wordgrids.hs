@@ -13,7 +13,7 @@ wordGrids =
       , "Declarative"
       , "Bash"
       , "Merge"
-      , "OO"
+      , "Objected-Oriented"
       , "Functional"
       , "Insertion"
       , "Linked-List"
@@ -25,10 +25,10 @@ wordGrids =
       , "Hash-Map"
       , "Perl"
       ]
-      [ ConnectionGroup (Connection "Python" "Perl" "Bash" "Groovy") "Programming Languages"
+      [ ConnectionGroup (Connection "Python" "Perl" "Bash" "Groovy") "Scripting Languages"
       , ConnectionGroup (Connection "Binary-Tree" "Linked-List" "Hash-Map" "Stack") "Data Structures"
       , ConnectionGroup (Connection "Merge" "Quick" "Insertion" "Bubble") "Sorting Algorithms"
-      , ConnectionGroup (Connection "OO" "Functional" "Imperative" "Declarative") "Programming Paradigms"
+      , ConnectionGroup (Connection "Object-Oriented" "Functional" "Imperative" "Declarative") "Programming Paradigms"
       ]
   ]
 -- array of WordGrids 
