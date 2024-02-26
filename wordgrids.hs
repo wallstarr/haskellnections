@@ -68,7 +68,6 @@ wordGrids =
         "HTML",
         "Malware",
         "Scrum",
-        "React",
         "Natural-Language-Processing"
       ]
       [ ConnectionGroup (Connection "Agile" "Scrum" "DevOps" "Waterfall") "Software Development Methodologies",

@@ -1,14 +1,15 @@
 module PlayHaskellNections where
 
+import Data.Time
 import Dictionary
 import Haskellnections
 import System.IO.Unsafe
-import Data.Time
 import WordGrids
 import Prelude hiding (Word)
 
-playConnections :: IO ()
-playConnections = do
+-- Entry point for the game, run this function to begin playing
+play :: IO ()
+play = do
   putStrLn "Welcome to Haskellnections by Adrian, Dan, and Andrew! Made for CPSC312 2024W"
   putStrLn "How to Play"
   putStrLn "Find groups of 4 words that share something in common."
@@ -19,14 +20,10 @@ playConnections = do
   putStrLn "Today's Grid: \n"
   let wordGrid = wordGrids !! (dayOfMonth `mod` length wordGrids)
 
-  -- TROUBLESHOOTING: If getting the error "Could not find module 'System.Random'":
-  -- brew install haskell-stack
-  -- stack ghci --package random
-
   haskellNections wordGrid [] 4
   putStrLn "Thanks for Playing Bruh"
 
--- DO NOT RUN THIS WITHOUT PARAMETERS -- like this -- haskellNections (wordGrids !! 0) [] 4
+-- Handles the game state, executed in a loop until either the user wins or lose
 haskellNections :: WordGrid -> [Connection] -> Integer -> IO ()
 haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives = do
   putStrLn ("Lives Remaining: " ++ (show numLives))
@@ -48,21 +45,21 @@ haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numL
               let answers = (map (\(ConnectionGroup connection _) -> connection) connectionGroups)
               if newConnection `elem` answers
                 then do
-                  putStrLn "Connection Found!"
+                  printWithColor "Connection Found!" "\ESC[32m"
                   let newConnectionsFound = newConnection : connectionsFound
-                  let newRemainingWords = filter (\a -> a `notElem` guessWords) remainingWords
+                  let newRemainingWords = filter (\a -> not (a `caseInsensitiveElem` guessWords)) remainingWords
                   if (length newConnectionsFound == length connectionGroups)
                     then do
-                      putStrLn "Congrats! You've found all the connections!"
+                      printWithColor "Congrats! You've found all the connections!" "\ESC[32m"
                       printGrid connectionGroups newRemainingWords
                     else do
                       haskellNections (WordGrid newRemainingWords connectionGroups) newConnectionsFound numLives
                 else do
-                  putStrLn "Unfortunately not one of the connections. Go again!"
+                  printWithColor "Unfortunately not one of the connections. Go again!" "\ESC[31m"
                   let newNumLives = numLives - 1
                   if (newNumLives == 0)
                     then do
-                      putStrLn "You're all out of lives. But you can't give up now..."
+                      printWithColor "You're all out of lives. But you can't give up now..." "\ESC[31m"
                     else do
                       haskellNections (WordGrid remainingWords connectionGroups) connectionsFound (numLives - 1)
             else do
@@ -83,6 +80,7 @@ haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numL
           putStrLn "Please enter either 1 or 2."
           haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives
 
+-- Function to get the current day of the month, used to retrieve the appropriate word grid for today
 -- Reference: https://wiki.haskell.org/Getting_the_current_date
 getCurrentDayOfMonth :: IO Int
 getCurrentDayOfMonth = do
