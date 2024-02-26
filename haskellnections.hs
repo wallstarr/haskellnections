@@ -1,5 +1,6 @@
 module Haskellnections where
 
+import Data.Char
 import Prelude hiding (Word)
 
 type Word = [Char] 
@@ -13,7 +14,9 @@ data Connection = Connection Word Word Word Word
 
 instance Eq Connection where
     (Connection a1 a2 a3 a4) == (Connection b1 b2 b3 b4) =
-        equivalent [a1, a2, a3, a4] [b1, b2, b3, b4]
+        equivalent 
+        (map (map toLower) [a1, a2, a3, a4]) 
+        (map (map toLower) [b1, b2, b3, b4])
         where 
             equivalent [] [] = True
             equivalent l1@(h1:t1) l2 = h1 `elem` l2 && equivalent t1 (filter (/= h1) l2)
