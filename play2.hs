@@ -1,72 +1,85 @@
 module PlayHaskellNections where
 
-import Prelude hiding (Word)
-import Haskellnections 
-import WordGrids
 import Dictionary
+import Haskellnections
+import System.IO.Unsafe
+import System.Random
+import WordGrids
+import Prelude hiding (Word)
 
 playConnections :: IO ()
-
 playConnections = do
-    putStrLn "Welcome to Haskellnections by Adrian, Dan, and Andrew! Made for CPSC312 2024W"
-    putStrLn "How to Play"
-    putStrLn "Find groups of 4 words that share something in common."
-    putStrLn "Find all 4 groups before you run out of lives to secure the W!"
-    putStrLn " "
+  putStrLn "Welcome to Haskellnections by Adrian, Dan, and Andrew! Made for CPSC312 2024W"
+  putStrLn "How to Play"
+  putStrLn "Find groups of 4 words that share something in common."
+  putStrLn "Find all 4 groups before you run out of lives to secure the W!"
+  putStrLn " "
 
-    haskellNections (wordGrids !! 0) [] 4
-    putStrLn "Thanks for Playing Bruh"
-    
+  -- get random index in range of available words and connections
+  -- reference: https://stackoverflow.com/questions/8416365/generate-a-random-integer-in-a-range-in-haskell-without-a-seed
+  let wordGridIndex = unsafePerformIO (getStdRandom (randomR (0, 2)))
+  let wordGrid = wordGrids !! wordGridIndex
+
+  -- TROUBLESHOOTING: If getting the error "Could not find module 'System.Random'":
+  -- brew install haskell-stack
+  -- stack ghci --package random
+
+  haskellNections wordGrid [] 4
+  putStrLn "Thanks for Playing Bruh"
+
 -- DO NOT RUN THIS WITHOUT PARAMETERS -- like this -- haskellNections (wordGrids !! 0) [] 4
 haskellNections :: WordGrid -> [Connection] -> Integer -> IO ()
-
 haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives = do
-    putStrLn ("Lives Remaining: " ++ (show numLives))
-    let connectionGroupsFound = filter (\ (ConnectionGroup connection _) -> connection `elem` connectionsFound) connectionGroups
-    printGrid connectionGroupsFound remainingWords
-    putStrLn "Enter 1 to guess a new connection"
-    putStrLn "Enter 2 to define one of the words"
-    option <- getLine
-    if option == "1" then do 
-        putStrLn "Guess a group of 4 words separated by a space (e.g. one two three four)"
-        guessString <- getLine
-        let guessWords = words guessString
-        if (length guessWords == 4) then do 
-          if (isValidGuess guessWords remainingWords) then do
-            let newConnection = Connection (guessWords !! 0) (guessWords !! 1) (guessWords !! 2) (guessWords !! 3)
-            let answers = (map (\ (ConnectionGroup connection _) -> connection) connectionGroups)
-            if newConnection `elem` answers then do
-              putStrLn "Connection Found!"
-              let newConnectionsFound = newConnection:connectionsFound
-              let newRemainingWords = filter (\a -> a `notElem` guessWords) remainingWords
-              if (length newConnectionsFound == length connectionGroups) then do
-                putStrLn "Congrats! You've found all the connections!"
-                printGrid connectionGroups newRemainingWords
-              else do 
-                haskellNections (WordGrid newRemainingWords connectionGroups) newConnectionsFound numLives
-            else do 
-              putStrLn "Unfortunately not one of the connections. Go again!"
-              let newNumLives = numLives - 1
-              if (newNumLives == 0) then do
-                putStrLn "You're all out of lives. But you can't give up now..."
-              else do 
-                haskellNections (WordGrid remainingWords connectionGroups) connectionsFound (numLives-1)
-          else do 
-            putStrLn "Not all words are not in the grid. Try again!"
-            haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives
-        else do 
+  putStrLn ("Lives Remaining: " ++ (show numLives))
+  let connectionGroupsFound = filter (\(ConnectionGroup connection _) -> connection `elem` connectionsFound) connectionGroups
+  printGrid connectionGroupsFound remainingWords
+  putStrLn "Enter 1 to guess a new connection"
+  putStrLn "Enter 2 to define one of the words"
+  option <- getLine
+  if option == "1"
+    then do
+      putStrLn "Guess a group of 4 words separated by a space (e.g. one two three four)"
+      guessString <- getLine
+      let guessWords = words guessString
+      if (length guessWords == 4)
+        then do
+          if (isValidGuess guessWords remainingWords)
+            then do
+              let newConnection = Connection (guessWords !! 0) (guessWords !! 1) (guessWords !! 2) (guessWords !! 3)
+              let answers = (map (\(ConnectionGroup connection _) -> connection) connectionGroups)
+              if newConnection `elem` answers
+                then do
+                  putStrLn "Connection Found!"
+                  let newConnectionsFound = newConnection : connectionsFound
+                  let newRemainingWords = filter (\a -> a `notElem` guessWords) remainingWords
+                  if (length newConnectionsFound == length connectionGroups)
+                    then do
+                      putStrLn "Congrats! You've found all the connections!"
+                      printGrid connectionGroups newRemainingWords
+                    else do
+                      haskellNections (WordGrid newRemainingWords connectionGroups) newConnectionsFound numLives
+                else do
+                  putStrLn "Unfortunately not one of the connections. Go again!"
+                  let newNumLives = numLives - 1
+                  if (newNumLives == 0)
+                    then do
+                      putStrLn "You're all out of lives. But you can't give up now..."
+                    else do
+                      haskellNections (WordGrid remainingWords connectionGroups) connectionsFound (numLives - 1)
+            else do
+              putStrLn "Not all words are not in the grid. Try again!"
+              haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives
+        else do
           putStrLn "Invalid input. Try again!"
-          haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives 
-    else if option == "2" then do 
-       putStrLn "Enter the word you wish to define."
-       word <- getLine  
-       let definition = define word 
-       printMaybeString definition
-       haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives
-    else do
-        putStrLn "Please enter either 1 or 2."
-        haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives 
-    
-   
-    
-
+          haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives
+    else
+      if option == "2"
+        then do
+          putStrLn "Enter the word you wish to define."
+          word <- getLine
+          let definition = define word
+          printMaybeString definition
+          haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives
+        else do
+          putStrLn "Please enter either 1 or 2."
+          haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives
