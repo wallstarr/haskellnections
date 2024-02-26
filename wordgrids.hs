@@ -59,7 +59,7 @@ wordGrids =
         "Encryption",
         "Firewall",
         "CSS",
-        "Malware",
+        "Agile",
         "Blockchain",
         "Machine-Learning",
         "DevOps",
@@ -77,6 +77,3 @@ wordGrids =
         ConnectionGroup (Connection "HTML" "CSS" "JavaScript" "React") "Web Development Technologies"
       ]
   ]
-
--- array of WordGrids
--- random int to get index (7) and fetch dat word grid baby
