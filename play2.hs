@@ -41,6 +41,7 @@ haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numL
               let newRemainingWords = filter (\a -> a `notElem` guessWords) remainingWords
               if (length newConnectionsFound == length connectionGroups) then do
                 putStrLn "Congrats! You've found all the connections!"
+                printGrid connectionGroups newRemainingWords
               else do 
                 haskellNections (WordGrid newRemainingWords connectionGroups) newConnectionsFound numLives
             else do 
