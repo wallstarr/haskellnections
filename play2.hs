@@ -3,7 +3,7 @@ module PlayHaskellNections where
 import Dictionary
 import Haskellnections
 import System.IO.Unsafe
-import System.Random
+import Data.Time
 import WordGrids
 import Prelude hiding (Word)
 
@@ -15,10 +15,9 @@ playConnections = do
   putStrLn "Find all 4 groups before you run out of lives to secure the W!"
   putStrLn " "
 
-  -- get random index in range of available words and connections
-  -- reference: https://stackoverflow.com/questions/8416365/generate-a-random-integer-in-a-range-in-haskell-without-a-seed
-  let wordGridIndex = unsafePerformIO (getStdRandom (randomR (0, 2)))
-  let wordGrid = wordGrids !! wordGridIndex
+  dayOfMonth <- getCurrentDayOfMonth
+  putStrLn "Today's Grid: \n"
+  let wordGrid = wordGrids !! (dayOfMonth `mod` length wordGrids)
 
   -- TROUBLESHOOTING: If getting the error "Could not find module 'System.Random'":
   -- brew install haskell-stack
@@ -83,3 +82,9 @@ haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numL
         else do
           putStrLn "Please enter either 1 or 2."
           haskellNections (WordGrid remainingWords connectionGroups) connectionsFound numLives
+
+-- Reference: https://wiki.haskell.org/Getting_the_current_date
+getCurrentDayOfMonth :: IO Int
+getCurrentDayOfMonth = do
+  (_, _, day) <- getCurrentTime >>= return . toGregorian . utctDay
+  return day

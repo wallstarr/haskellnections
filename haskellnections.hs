@@ -40,6 +40,8 @@ printGrid foundConnections availableWords = do
     mapM_ putStrLn wordGridlines
     putStrLn "\n"
 
+-- HELPER VARIABLES AND FUNCTIONS 
+
 backgroundColors :: [String]
 backgroundColors = ["\ESC[43m", "\ESC[44m", "\ESC[102m", "\ESC[105m"]
 
